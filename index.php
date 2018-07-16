@@ -5,6 +5,7 @@
         <meta charset="iso-8859-1">
         <link rel="stylesheet" href="style.css" media="all" />
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
      </head>
     <body>
         <H2 align="center">Estat&iacute;sticas de not&iacute;cias</H2><HR><br>
@@ -33,7 +34,7 @@
                     <option value="21" value2="PB" value1="Paraiba">Para&iacute;ba (PB)</option>
                     <option value="22, 23, 24, 25" value2="PR" value1="Parana">Paran&aacute; (PR)</option>
                     <option value="26, 27, 28" value2="PE" value1="Pernambuco">Pernambuco (PE)</option>
-                    <option value="0" value2="PI" value1="Piaui">Piau&iacute; (PI)</option>
+                    <!--<option value="0" value2="PI" value1="Piaui">Piau&iacute; (PI)</option>-->
                     <option value="29, 30, 31, 32, 33" value2="RJ" value1="Rio de Janeiro">Rio de Janeiro (RJ)</option>
                     <option value="34" value2="RN" value1="Rio Grande do Norte">Rio Grande do Norte (RN)</option>
                     <option value="35" value2="RS" value1="Rio Grande do Sul">Rio Grande do Sul (RS)</option>
@@ -58,6 +59,9 @@
             </p>
         </form>
         <h1>Estat&iacute;stica:</h1>
+        
+        <div id="piechart" style="width: 900px; height: 500px;"></div>
+        
         <script type="text/javascript">
             function validaForm()
             {
@@ -93,14 +97,69 @@
         }
         $array = seachies($_POST['news1'], $_POST['news2'], $_POST['area'], $_POST['year']);        
         if ($array[0]!==0 or $array[2] !==0){
-            $grafico = geraGrafico(500, 200, array($array[0] , $array[2]), array($_POST['news1'] . "(" . $array[0] . ")", $_POST['news2'] . "(" . $array[2] . ")"));
-            echo '<img src="' . $grafico . '"/>';                    
+            $grafico = geraGrafico(512, 200, array($array[0] , $array[2]), array($_POST['news1'] . "(" . $array[0] . ")", $_POST['news2'] . "(" . $array[2] . ")"));
+            //echo '<img src="' . $grafico . '"/>';                    
         }
         echo "<br><br><br>";
         //echo $array[0];
         echo $array[1];
         // echo $array[2];
         echo $array[3];
-    ?>        
+    ?> 
+        <script type="text/javascript">
+            //carregando modulo visualization
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+//função de monta e desenha o gráfico
+      function drawChart() {
+//variavel com armazenamos os dados, um array de array's 
+    //no qual a primeira posição são os nomes das colunas
+        var data = google.visualization.arrayToDataTable([
+          ['Noticia', 'Quantidade'],
+         ['<?php echo $_POST['news1'];?>',     <?php echo $array[0];?>],
+         ['<?php echo $_POST['news2'];?>',     <?php echo $array[2];?>]
+        ]);
+//opções para exibição do gráfico
+        var options = {
+          title: '',//titulo do gráfico
+          is3D: true // false para 2d e true para 3d o padrão é false
+        };
+//cria novo objeto PeiChart que recebe 
+       //como parâmetro uma div onde o gráfico será desenhado
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+//desenha passando os dados e as opções
+        chart.draw(data, options);
+      }
+    </script>
+    
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['bar']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Year', 'Sales', 'Expenses', 'Profit'],
+          ['2014', 1000, 400, 200],
+          ['2015', 1170, 460, 250],
+          ['2016', 660, 1120, 300],
+          ['2017', 1030, 540, 350],
+          ['2018', 1000, 400, 200]
+        ]);
+
+        var options = {
+          chart: {
+            title: 'Company Performance',
+            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+          }
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+      }
+    </script>
+    
+   <div id="columnchart_material" style="width: 800px; height: 500px;"></div>
+    
     </body>
 </html>
