@@ -14,7 +14,6 @@
                 Procurar por: <br>
                 <input type="text" size="26" name="news1" id="news1"><br><br>
                 <input type="text" size="26" name="news2" id="news2"><br><br>
-
                 <select class="basic simple" name="area" id="area">
                     <option value="" >Escolha um estado:</option>
                     <option value="1" value2="AC" value1="Acre">Acre (AC)</option>
@@ -45,7 +44,6 @@
                     <option value="52" value2="SE" value1="Sergipe">Sergipe (SE)</option>
                     <option value="53" value2="TO" value1="Tocantins">Tocantins (TO)</option>
                 </select><br><br>
-
                 <select class="basic simple" id="year" name="year">
                     <option value="" >Escolha um ano:</option>
                     <option value="2018" >2018</option>
@@ -54,14 +52,10 @@
                     <option value="2015" >2015</option>
                     <option value="2014" >2014</option>
                 </select><br><br>
-
                 <input type="submit" value="Pesquisar">
             </p>
         </form>
-        <h1>Estat&iacute;stica:</h1>
-        
-        <div id="piechart" style="width: 900px; height: 500px;"></div>
-        
+        <h1>Estat&iacute;stica:</h1>               
         <script type="text/javascript">
             function validaForm()
             {
@@ -87,79 +81,85 @@
             }
         </script>
         <?php
-            include 'funcao.php';
-            
-            if(!$_POST['news1']){
-            $_POST['news1']= '';
-            $_POST['news2']= '';
-            $_POST['area']= '';
-            $_POST['year']= '';        
-        }
-        $array = seachies($_POST['news1'], $_POST['news2'], $_POST['area'], $_POST['year']);        
-        if ($array[0]!==0 or $array[2] !==0){
-            $grafico = geraGrafico(512, 200, array($array[0] , $array[2]), array($_POST['news1'] . "(" . $array[0] . ")", $_POST['news2'] . "(" . $array[2] . ")"));
-            //echo '<img src="' . $grafico . '"/>';                    
-        }
-        echo "<br><br><br>";
-        //echo $array[0];
-        echo $array[1];
-        // echo $array[2];
-        echo $array[3];
-    ?> 
+            include 'funcao.php';            
+            if(!isset($_POST['news1'])){
+                $_POST['news1']= '';
+                $_POST['news2']= '';
+                $_POST['area']= '';
+                $_POST['year']= '';        
+            }
+            //$array = seachies($_POST['news1'], $_POST['news2'], $_POST['area'], $_POST['year']);
+            $array1 = seach1($_POST['news1'], $_POST['area'], $_POST['year']);
+            $array2 = seach2($_POST['news2'], $_POST['area'], $_POST['year']);
+            if ($array1[0]!==0 or $array2[0] !==0){
+                //$grafico = geraGrafico(512, 200, array($array1[0] , $array2[0]), array($_POST['news1'] . "(" . $array1[0] . ")", $_POST['news2'] . "(" . $array2[0] . ")"));
+                //echo '<img src="' . $grafico . '"/>';                    
+            }
+            echo "<br><br><br>";
+            //echo $array[0];
+            //echo $array[1];
+            // echo $array[2];
+            //echo $array[3];
+        ?> 
         <script type="text/javascript">
             //carregando modulo visualization
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
-//função de monta e desenha o gráfico
-      function drawChart() {
-//variavel com armazenamos os dados, um array de array's 
-    //no qual a primeira posição são os nomes das colunas
-        var data = google.visualization.arrayToDataTable([
-          ['Noticia', 'Quantidade'],
-         ['<?php echo $_POST['news1'];?>',     <?php echo $array[0];?>],
-         ['<?php echo $_POST['news2'];?>',     <?php echo $array[2];?>]
-        ]);
-//opções para exibição do gráfico
-        var options = {
-          title: '',//titulo do gráfico
-          is3D: true // false para 2d e true para 3d o padrão é false
-        };
-//cria novo objeto PeiChart que recebe 
-       //como parâmetro uma div onde o gráfico será desenhado
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-//desenha passando os dados e as opções
-        chart.draw(data, options);
-      }
-    </script>
-    
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['bar']});
-      google.charts.setOnLoadCallback(drawChart);
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+            //função de monta e desenha o gráfico
+            function drawChart() {
+                //variavel com armazenamos os dados, um array de array's 
+                //no qual a primeira posição são os nomes das colunas
+                var data = google.visualization.arrayToDataTable([
+                ['Noticia', 'Quantidade'],
+                ['<?php echo $_POST['news1'];?>',     <?php echo $array1[0];?>],
+                ['<?php echo $_POST['news2'];?>',     <?php echo $array2[0];?>]
+                ]);
+                //opções para exibição do gráfico
+                var options = {
+                title: '',//titulo do gráfico
+                pieHole: 0.4, // false para 2d e true para 3d o padrão é false
+                };
+                //cria novo objeto PeiChart que recebe 
+                //como parâmetro uma div onde o gráfico será desenhado
+                var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                //desenha passando os dados e as opções
+                chart.draw(data, options);
+            }
+        </script>
+        <script type="text/javascript">
+            google.charts.load('current', {'packages':['bar']});
+            google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Year', 'Sales', 'Expenses', 'Profit'],
-          ['2014', 1000, 400, 200],
-          ['2015', 1170, 460, 250],
-          ['2016', 660, 1120, 300],
-          ['2017', 1030, 540, 350],
-          ['2018', 1000, 400, 200]
-        ]);
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable([
+                ['Mes', '<?php echo $_POST['news1'];?>', '<?php echo $_POST['news2'];?>'],
+                ['JAN', <?php echo $array1[1];?>, <?php echo $array2[1];?>],
+                ['FEV', <?php echo $array1[2];?>, <?php echo $array2[2];?>],
+                ['MAR', <?php echo $array1[3];?>, <?php echo $array2[3];?>],
+                ['ABR', <?php echo $array1[4];?>, <?php echo $array2[4];?>],
+                ['MAI', <?php echo $array1[5];?>, <?php echo $array2[5];?>],
+                ['JUN', <?php echo $array1[6];?>, <?php echo $array2[6];?>],
+                ['JUL', <?php echo $array1[7];?>, <?php echo $array2[7];?>],
+                ['AGO', <?php echo $array1[8];?>, <?php echo $array2[8];?>],
+                ['SET', <?php echo $array1[9];?>, <?php echo $array2[9];?>],
+                ['OUT', <?php echo $array1[10];?>, <?php echo $array2[10];?>],
+                ['NOV', <?php echo $array1[11];?>, <?php echo $array2[11];?>],
+                ['DEZ', <?php echo $array1[12];?>, <?php echo $array2[12];?>]
+                ]);
+                var options = {
+                chart: {
+                title: 'Quantidades de Noticias Sobre:',
+                subtitle: '<?php echo $_POST['news1'];?>, <?php echo $_POST['news2'];?> em <?php echo $_POST['year'];?>',
+                },
+                vAxis: {format: 'decimal'}
+                };
+                var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
 
-        var options = {
-          chart: {
-            title: 'Company Performance',
-            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
-          }
-        };
-
-        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
-
-        chart.draw(data, google.charts.Bar.convertOptions(options));
-      }
-    </script>
-    
-   <div id="columnchart_material" style="width: 800px; height: 500px;"></div>
-    
+                chart.draw(data, google.charts.Bar.convertOptions(options));
+            }
+        </script>    
+        <div id="columnchart_material" style="width: 800px; height: 500px;"></div>
+        <br><br><br>
+        <div id="piechart" style="width: 900px; height: 500px;"></div>
     </body>
 </html>
